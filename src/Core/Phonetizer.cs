@@ -28,7 +28,7 @@ namespace phonet4n.Core
         public static void TraceInfo (String[] rules, String  text, int n, String err_text) {
 
             String s,s2,s3;
-            s  = (rules[n] == null)  ?  "(NULL)" : rules[n];
+            s  = (rules[n] == null) ?  "(NULL)" : rules[n];
             s2 = (rules[n+1] == null) ? "(NULL)" : rules[n+1];
             s3 = (rules[n+2] == null) ? "(NULL)" : rules[n+2];
             
@@ -41,45 +41,25 @@ namespace phonet4n.Core
     {
         public static int strchr(string buffer, int fromIndex, int ch)
         {
-            return strchr(buffer.ToCharArray(), fromIndex, ch);
+        	return buffer.IndexOf((char)ch, fromIndex);
         }
 
         public static int strchr(char[] buffer, int fromIndex, int ch)
         {
-            int max = buffer.Length;
-            for (; fromIndex < max; fromIndex++)
-            {
-                if (buffer[fromIndex] == ch)
-                {
-                    return fromIndex;
-                }
-            }
-            return -1;
+        	return strchr(new String(buffer), fromIndex, ch);
         }
 
         public static int[] Slice(int[,] source, int index)
         {
             int dim = 1;
-            
             int[] result = new int[source.GetLength(dim)];
             for(int i = 0; i < source.GetLength(dim); i++)
                 result[i] = source[index, i];
 
             return result;
         }
-
-        public static void ArrayCopy(char[] src, int srcPos, char[] dest, int destPos, int length)
-        {
-            char[] copy = (char[])src.Clone();
-            for(int i = 0; i < length; i++)
-                dest[destPos + i] = copy[srcPos + i];
-        }
-
     }
     
-    /// <summary>
-	/// Description of MyClass.
-	/// </summary>
 	public class Phonetizer
 	{
 		private String[] phonetRules = null;
@@ -640,7 +620,7 @@ namespace phonet4n.Core
                                 if (k0 < numMatchLetters) {
 
                                     int index = Functions.strchr(srcUpperStr, 0, '\0');
-                                    Functions.ArrayCopy(srcUpperStr, srcStrIdx+numMatchLetters, srcUpperStr, srcStrIdx+k0, index + 1 - srcStrIdx - numMatchLetters);
+                                    Array.Copy(srcUpperStr, srcStrIdx+numMatchLetters, srcUpperStr, srcStrIdx+k0, index + 1 - srcStrIdx - numMatchLetters);
 
                                 }
 
@@ -682,7 +662,7 @@ namespace phonet4n.Core
                                     }
                                     
                                     int index = Functions.strchr(srcUpperStr, 0, '\0');
-                                    Functions.ArrayCopy(srcUpperStr, srcStrIdx+1, srcUpperStr, 0, (index - (srcStrIdx + 1)) + 1);
+                                    Array.Copy(srcUpperStr, srcStrIdx+1, srcUpperStr, 0, (index - (srcStrIdx + 1)) + 1);
 
                                     srcStrIdx = 0;
                                     z0 = 1;
