@@ -20,6 +20,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
@@ -31,19 +32,16 @@ namespace phonet4n.Core
     {
         private static String Escape(String s)
         {
-            if (s == null)
-                return null;
-
             if (s == "<null>")
                 return null;
 
             return s;
         }
 
-        public static String[] LoadFromCSV(String filename)
+        public static String[] LoadFromLines(string[] lines)
         {
             List<String> result = new List<String>();
-            foreach (String line in File.ReadAllLines(filename, Encoding.UTF8))
+            foreach (String line in lines)
             {
                 if (line.StartsWith("#"))
                     continue;
@@ -58,10 +56,31 @@ namespace phonet4n.Core
             return result.ToArray();
         }
 
-        public static String[] LoadFromLanguage(String lang)
+        public static String[] LoadFromCSV(String filename)
         {
-            // TODO: replace with resource based retrieval
-            return LoadFromCSV("D:/Devel/csharp/phonet4n_bak/phonet4n/rules/" + lang + ".csv");
+            return LoadFromLines(File.ReadAllLines(filename, Encoding.UTF8));
         }
+
+        public static String[] LoadFromRessource(String name)
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
+            {
+
+                if (stream == null)
+                    throw new ArgumentException(name + " is no valid ressource name");
+
+                using (TextReader text = new StreamReader(stream, Encoding.UTF8))
+                {
+                    List<string> lines = new List<string>();
+                    string line;
+                    while ((line = text.ReadLine()) != null)
+                        lines.Add(line);
+                    return LoadFromLines(lines.ToArray());
+                }
+            }
+        }
+
+        public static string[] DefaultRules = LoadFromRessource("phonet4n.Core.german_1.csv");
+
     }
 }

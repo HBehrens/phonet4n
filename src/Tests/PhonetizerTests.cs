@@ -32,7 +32,7 @@ namespace phonet4n.Tests
         public void TestSimpleGerman1()
         {
             Phonetizer p = new Phonetizer();
-            p.Rules = RuleLoader.LoadFromCSV("../../rules/german_1.csv");
+            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_1.csv");
             Assert.AreEqual(919 * 3, p.Rules.Length);
 
             Assert.AreEqual("MEIA", p.Phonetize("Meier"));
@@ -45,7 +45,7 @@ namespace phonet4n.Tests
         public void TestSimpleGerman2()
         {
             Phonetizer p = new Phonetizer();
-            p.Rules = RuleLoader.LoadFromCSV("../../rules/german_2.csv");
+            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_2.csv");
             Assert.AreEqual(919 * 3, p.Rules.Length);
 
             Assert.AreEqual("NEIA", p.Phonetize("Meier"));

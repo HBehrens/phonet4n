@@ -47,5 +47,11 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="RuleLoader.cs" />
     <Compile Include="Phonetizer.cs" />
+    <EmbeddedResource Include="..\..\rules\german_1.csv">
+      <Link>german_1.csv</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\rules\german_2.csv">
+      <Link>german_2.csv</Link>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -46,7 +46,7 @@ namespace phonet4n.Tests
                     DoPhonetize(line);
             TimeSpan duration = DateTime.Now - started;
 
-            Console.WriteLine("Needed Time for " + GetType().Name + ": " + duration.Milliseconds.ToString());
+            Console.WriteLine("Needed Time for " + GetType().Name + ": " + duration.ToString());
         }
 
         [Test]
@@ -68,7 +68,6 @@ namespace phonet4n.Tests
         {
             base.SetUp();
             phonetizer = new Phonetizer();
-            phonetizer.SetLangage("german_1");
         }
 
         override protected void DoPhonetize(string input)

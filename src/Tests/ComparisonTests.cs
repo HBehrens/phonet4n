@@ -38,7 +38,6 @@ namespace phonet4n.Tests
         {
             adapter = new CImplAdapter();
             phonetizer = new Phonetizer();
-            phonetizer.Rules = RuleLoader.LoadFromCSV("../../rules/german_1.csv");
         }
 
         [Test]

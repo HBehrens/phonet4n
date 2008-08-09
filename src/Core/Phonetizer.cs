@@ -64,9 +64,9 @@ namespace phonet4n.Core
             }
         }
 
-        public void SetLangage(string lang)
+        public Phonetizer()
         {
-            Rules = RuleLoader.LoadFromLanguage(lang);
+            Rules = RuleLoader.DefaultRules;
         }
 
         public static int HASH_COUNT = 65536;
