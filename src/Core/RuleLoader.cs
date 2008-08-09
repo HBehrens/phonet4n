@@ -27,37 +27,41 @@ using System.Diagnostics;
 
 namespace phonet4n.Core
 {
-	public class RuleLoader
-	{
-	    private static String Escape(String s) {
-	        if(s == null)
-	            return null;
-	        
-	        if(s == "<null>")
-	            return null;
+    public class RuleLoader
+    {
+        private static String Escape(String s)
+        {
+            if (s == null)
+                return null;
 
-	        return s;
-	    }
-		
-		public static String[] LoadFromCSV(String filename){
-			List<String> result = new List<String>();
-			foreach(String line in File.ReadAllLines(filename, Encoding.UTF8))
-			{
-				if(line.StartsWith("#"))
-				   continue;
-				
-				Match m = Regex.Match(line, "\"([^\"]*)\",\"([^\"]*)\"");
-				Debug.Assert(m.Success);
+            if (s == "<null>")
+                return null;
 
-				result.Add(Escape(m.Groups[1].Value));
-				result.Add(Escape(m.Groups[2].Value));
-				result.Add(null);
-			}
-			return result.ToArray();
-	    }		
-		
-		public static String[] LoadFromLanguage(String lang) {
-			return LoadFromCSV("D:/Devel/csharp/phonet4n_bak/phonet4n/rules/" + lang + ".csv");
-		}
-	}
+            return s;
+        }
+
+        public static String[] LoadFromCSV(String filename)
+        {
+            List<String> result = new List<String>();
+            foreach (String line in File.ReadAllLines(filename, Encoding.UTF8))
+            {
+                if (line.StartsWith("#"))
+                    continue;
+
+                Match m = Regex.Match(line, "\"([^\"]*)\",\"([^\"]*)\"");
+                Debug.Assert(m.Success);
+
+                result.Add(Escape(m.Groups[1].Value));
+                result.Add(Escape(m.Groups[2].Value));
+                result.Add(null);
+            }
+            return result.ToArray();
+        }
+
+        public static String[] LoadFromLanguage(String lang)
+        {
+            // TODO: replace with resource based retrieval
+            return LoadFromCSV("D:/Devel/csharp/phonet4n_bak/phonet4n/rules/" + lang + ".csv");
+        }
+    }
 }

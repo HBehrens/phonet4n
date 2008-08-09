@@ -41,6 +41,7 @@
     <Compile Include="CImplAdapter.cs" />
     <Compile Include="PhonetizerTests.cs" />
     <Compile Include="ComparisonTests.cs" />
+    <Compile Include="SpeedTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\Core.csproj">
