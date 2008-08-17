@@ -2,6 +2,9 @@
  *  This file is part of phonet4n.
  * 
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
+ * 
+ *  Contributions by
+ *    Sebastian Zarnekow
  *
  *  phonet4n is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as
@@ -19,7 +22,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 
 namespace phonet4n.Core
 {
@@ -53,6 +55,8 @@ namespace phonet4n.Core
 
     public class Phonetizer
     {
+        private bool doKeepRecurringDigits;
+
         private String[] phonetRules = null;
         public String[] Rules
         {
@@ -64,9 +68,15 @@ namespace phonet4n.Core
             }
         }
 
-        public Phonetizer()
+        public Phonetizer(bool keepRecurringDigits)
         {
+            doKeepRecurringDigits = keepRecurringDigits;
             Rules = RuleLoader.DefaultRules;
+        }
+
+        public Phonetizer() :
+            this(false)
+        {
         }
 
         public static int HASH_COUNT = 65536;
@@ -102,7 +112,7 @@ namespace phonet4n.Core
         private int[][] phonetHash1, phonetHash2;
         private static int[] alphaPos = new int[HASH_COUNT];
         private static char[] upperChar = new char[HASH_COUNT];
-        private static int[] isLetter = new int[HASH_COUNT];
+        private static bool[] isLetter = new bool[HASH_COUNT];
 
         static Phonetizer()
         {
@@ -110,7 +120,7 @@ namespace phonet4n.Core
             for (int i = 0; i < HASH_COUNT; i++)
             {
                 alphaPos[i] = 0;
-                isLetter[i] = 0;
+                isLetter[i] = false;
                 upperChar[i] = (char)i;
             }
 
@@ -145,8 +155,8 @@ namespace phonet4n.Core
 
                     alphaPos[lettersLower[i]] = ip + 2;
                     alphaPos[lettersUpper[i]] = ip + 2;
-                    isLetter[lettersLower[i]] = 1;
-                    isLetter[lettersUpper[i]] = 1;
+                    isLetter[lettersLower[i]] = true;
+                    isLetter[lettersUpper[i]] = true;
                     upperChar[lettersLower[i]] = lettersUpper[i];
                     upperChar[lettersUpper[i]] = lettersUpper[i];
                 } // for i
@@ -429,7 +439,7 @@ namespace phonet4n.Core
                         {
 
                             //  check an array of letters
-                            if ((isLetter[srcUpperStr[srcStrIdx + numMatchLetters]] != 0) && (Functions.strchr(nextRuleCharArr, nextRuleIdx + 1, srcUpperStr[srcStrIdx + numMatchLetters]) != -1))
+                            if ((isLetter[srcUpperStr[srcStrIdx + numMatchLetters]]) && (Functions.strchr(nextRuleCharArr, nextRuleIdx + 1, srcUpperStr[srcStrIdx + numMatchLetters]) != -1))
                             {
 
                                 numMatchLetters++;
@@ -465,7 +475,7 @@ namespace phonet4n.Core
                         if (nextRuleCharArr[nextRuleIdx] == '^' && nextRuleCharArr[nextRuleIdx + 1] == '^')
                         {
                             nextRuleIdx++;
-                            if (doCheckRules && isLetter[srcUpperStr[srcStrIdx + k0]] == 0)
+                            if (doCheckRules && !isLetter[srcUpperStr[srcStrIdx + k0]])
                             {
                                 //  we do "check_rules"
                                 nextRuleIdx = nextRuleIdx - 2;
@@ -474,11 +484,11 @@ namespace phonet4n.Core
 
                         if (nextRuleCharArr[nextRuleIdx] == '\0' ||
                              (nextRuleCharArr[nextRuleIdx] == '^' &&
-                             (srcStrIdx == 0 || isLetter[srcUpperStr[srcStrIdx - 1]] == 0) &&
+                             (srcStrIdx == 0 || !isLetter[srcUpperStr[srcStrIdx - 1]]) &&
                              (nextRuleCharArr[nextRuleIdx + 1] != '$' ||
-                             (isLetter[srcUpperStr[srcStrIdx + k0]] == 0 && srcUpperStr[srcStrIdx + k0] != '.'))) ||
-                             (nextRuleCharArr[nextRuleIdx] == '$' && srcStrIdx > 0 && isLetter[srcUpperStr[srcStrIdx - 1]] != 0 &&
-                             (isLetter[srcUpperStr[srcStrIdx + k0]] == 0 && srcUpperStr[srcStrIdx + k0] != '.')))
+                             (!isLetter[srcUpperStr[srcStrIdx + k0]] && srcUpperStr[srcStrIdx + k0] != '.'))) ||
+                             (nextRuleCharArr[nextRuleIdx] == '$' && srcStrIdx > 0 && isLetter[srcUpperStr[srcStrIdx - 1]] &&
+                             (!isLetter[srcUpperStr[srcStrIdx + k0]] && srcUpperStr[srcStrIdx + k0] != '.')))
                         {
                             //  look for continuation, if:
                             //  k > 1  and  NO '-' in first string
@@ -583,7 +593,7 @@ namespace phonet4n.Core
                                     if (nextRuleCharArr[nextRuleIdx] == '(')
                                     {
                                         // check an array of letters
-                                        if (isLetter[srcUpperStr[srcStrIdx + k0]] != 0 &&
+                                        if (isLetter[srcUpperStr[srcStrIdx + k0]] &&
                                             Functions.strchr(nextRuleCharArr, nextRuleIdx + 1, srcUpperStr[srcStrIdx + k0]) != -1)
                                         {
                                             k0++;
@@ -617,7 +627,7 @@ namespace phonet4n.Core
                                     // *s == '^' is not possible here
                                     if (nextRuleCharArr[nextRuleIdx] == '\0' ||
                                          (nextRuleCharArr[nextRuleIdx] == '$' &&
-                                         isLetter[srcUpperStr[srcStrIdx + k0]] == 0 &&
+                                         !isLetter[srcUpperStr[srcStrIdx + k0]] &&
                                          srcUpperStr[srcStrIdx + k0] != '.'))
                                     {
 
@@ -788,7 +798,10 @@ namespace phonet4n.Core
                 if (z0 == 0)
                 {
 
-                    if (resultIdx < resultLen - 1 && nextCurrentChar != '\0' && (resultIdx == 0 || result[resultIdx - 1] != nextCurrentChar))
+                    if (resultIdx < resultLen - 1 &&
+                        nextCurrentChar != '\0' &&
+                        (resultIdx == 0 || result[resultIdx - 1] != nextCurrentChar ||
+                         (doKeepRecurringDigits && char.IsDigit(nextCurrentChar))))
                     {
 
                         // delete multiple letters only
