@@ -35,8 +35,13 @@ namespace phonet4n.Core
             s2 = (rules[n + 1] == null) ? "(NULL)" : rules[n + 1];
             s3 = (rules[n + 2] == null) ? "(NULL)" : rules[n + 2];
 
-            Console.WriteLine(text + " " + ((n / 3) + 1) + ":  \"" + s + " \" " + s2 + " \" " + s3 + " \" " + err_text);
+            WriteLine(text + " " + ((n / 3) + 1) + ":  \"" + s + " \" " + s2 + " \" " + s3 + " \" " + err_text);
 
+        }
+        
+        public static void WriteLine(String s)
+        {
+            Console.WriteLine(s);
         }
     }
 
@@ -79,7 +84,7 @@ namespace phonet4n.Core
         {
         }
 
-        public static int HASH_COUNT = 65536;
+        public static readonly int HASH_COUNT = 65536;
 
         /**
          * list of "normal" letters.
@@ -107,12 +112,12 @@ namespace phonet4n.Core
 
         static readonly bool doTrace = false;
         static readonly bool doCheckRules = false;
-        public static String PHONET_END = "";
+        public static readonly String PHONET_END = "";
         private int[] phonetHash;
         private int[][] phonetHash1, phonetHash2;
-        private static int[] alphaPos = new int[HASH_COUNT];
-        private static char[] upperChar = new char[HASH_COUNT];
-        private static bool[] isLetter = new bool[HASH_COUNT];
+        private static readonly int[] alphaPos = new int[HASH_COUNT];
+        private static readonly char[] upperChar = new char[HASH_COUNT];
+        private static readonly bool[] isLetter = new bool[HASH_COUNT];
 
         static Phonetizer()
         {
@@ -287,7 +292,7 @@ namespace phonet4n.Core
 
         public String Phonetize(String srcStr)
         {
-            int k0, n0, p0, z0;
+       	    int k0, n0, p0, z0;
             int start1 = 0, end1 = 0, start2 = 0, end2 = 0;
             int start3 = 0, end3 = 0, start4 = 0, end4 = 0;
 
@@ -306,7 +311,7 @@ namespace phonet4n.Core
 
             if (doTrace)
             {
-                Console.WriteLine("phonetic conversion for  :  \"" + srcUpperStr + "\"");
+                PhonetTracer.WriteLine("phonetic conversion for  :  \"" + srcUpperStr + "\"");
             }
 
             //  check srcStr
@@ -324,9 +329,9 @@ namespace phonet4n.Core
 
                 if (doTrace)
                 {
-                    Console.WriteLine("check position " + resultIdx + ":  src = \"" + srcUpperStr.ToString().Substring(srcStrIdx, srcUpperStr.Length - srcStrIdx - 1) + "\",");
+                    PhonetTracer.WriteLine("check position " + resultIdx + ":  src = \"" + srcUpperStr.ToString().Substring(srcStrIdx, srcUpperStr.Length - srcStrIdx - 1) + "\",");
                     String tmpDest = new String(result);
-                    Console.WriteLine("  dest = [" + tmpDest.Substring(0, tmpDest.IndexOf('\0')) + "]");
+                    PhonetTracer.WriteLine("  dest = [" + tmpDest.Substring(0, tmpDest.IndexOf('\0')) + "]");
 
                 }
 
@@ -695,7 +700,7 @@ namespace phonet4n.Core
                                 // rule with '<' is applied
                                 if (doTrace)
                                 {
-                                    Console.WriteLine("rule with < applied");
+                                    PhonetTracer.WriteLine("rule with < applied");
                                 }
 
                                 if (resultIdx > 0 &&
@@ -819,8 +824,8 @@ namespace phonet4n.Core
 
             if (doTrace)
             {
-                Console.WriteLine("<phonet() : " + new String(result));
-                Console.WriteLine("====================================================");
+                PhonetTracer.WriteLine("<phonet() : " + new String(result));
+                PhonetTracer.WriteLine("====================================================");
             }
 
             String resultString = new String(result);
@@ -829,7 +834,6 @@ namespace phonet4n.Core
 
 
         } // end phonetize
-
 
     }
 }

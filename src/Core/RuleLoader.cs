@@ -80,7 +80,7 @@ namespace phonet4n.Core
             }
         }
 
-        public static string[] DefaultRules = LoadFromRessource("phonet4n.Core.german_1.csv");
+        public readonly static string[] DefaultRules = LoadFromRessource("phonet4n.Core.german_1.csv");
 
     }
 }
