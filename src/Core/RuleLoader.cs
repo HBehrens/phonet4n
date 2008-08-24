@@ -1,6 +1,8 @@
+#region Header
+
 /*
  *  This file is part of phonet4n.
- * 
+ *
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
  *
  *  phonet4n is free software: you can redistribute it and/or modify
@@ -18,24 +20,31 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Diagnostics;
+#endregion Header
 
 namespace phonet4n.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
     public class RuleLoader
     {
-        private static String Escape(String s)
-        {
-            if (s == "<null>")
-                return null;
+        #region Fields
 
-            return s;
+        public static readonly string[] DefaultRules = LoadFromRessource("phonet4n.Core.german_1.csv");
+
+        #endregion Fields
+
+        #region Methods
+
+        public static String[] LoadFromCSV(String filename)
+        {
+            return LoadFromLines(File.ReadAllLines(filename, Encoding.UTF8));
         }
 
         public static String[] LoadFromLines(string[] lines)
@@ -54,11 +63,6 @@ namespace phonet4n.Core
                 result.Add(null);
             }
             return result.ToArray();
-        }
-
-        public static String[] LoadFromCSV(String filename)
-        {
-            return LoadFromLines(File.ReadAllLines(filename, Encoding.UTF8));
         }
 
         public static String[] LoadFromRessource(String name)
@@ -80,7 +84,14 @@ namespace phonet4n.Core
             }
         }
 
-        public readonly static string[] DefaultRules = LoadFromRessource("phonet4n.Core.german_1.csv");
+        private static String Escape(String s)
+        {
+            if (s == "<null>")
+                return null;
 
+            return s;
+        }
+
+        #endregion Methods
     }
 }

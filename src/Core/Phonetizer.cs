@@ -1,8 +1,10 @@
-﻿/*
+﻿#region Header
+
+/*
  *  This file is part of phonet4n.
- * 
+ *
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
- * 
+ *
  *  Contributions by
  *    Sebastian Zarnekow
  *
@@ -21,32 +23,16 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
+#endregion Header
 
 namespace phonet4n.Core
 {
-    public class PhonetTracer
-    {
-        public static void TraceInfo(String[] rules, String text, int n, String err_text)
-        {
-
-            String s, s2, s3;
-            s = (rules[n] == null) ? "(NULL)" : rules[n];
-            s2 = (rules[n + 1] == null) ? "(NULL)" : rules[n + 1];
-            s3 = (rules[n + 2] == null) ? "(NULL)" : rules[n + 2];
-
-            WriteLine(text + " " + ((n / 3) + 1) + ":  \"" + s + " \" " + s2 + " \" " + s3 + " \" " + err_text);
-
-        }
-        
-        public static void WriteLine(String s)
-        {
-            Console.WriteLine(s);
-        }
-    }
+    using System;
 
     public class Functions
     {
+        #region Methods
+
         public static int strchr(string buffer, int fromIndex, char ch)
         {
             return buffer.IndexOf(ch, fromIndex);
@@ -56,47 +42,50 @@ namespace phonet4n.Core
         {
             return Array.IndexOf(buffer, ch, fromIndex);
         }
+
+        #endregion Methods
+    }
+
+    public class PhonetTracer
+    {
+        #region Methods
+
+        public static void TraceInfo(String[] rules, String text, int n, String err_text)
+        {
+            String s, s2, s3;
+            s = (rules[n] == null) ? "(NULL)" : rules[n];
+            s2 = (rules[n + 1] == null) ? "(NULL)" : rules[n + 1];
+            s3 = (rules[n + 2] == null) ? "(NULL)" : rules[n + 2];
+
+            WriteLine(text + " " + ((n / 3) + 1) + ":  \"" + s + " \" " + s2 + " \" " + s3 + " \" " + err_text);
+        }
+
+        public static void WriteLine(String s)
+        {
+            Console.WriteLine(s);
+        }
+
+        #endregion Methods
     }
 
     public class Phonetizer
     {
-        private bool doKeepRecurringDigits;
-
-        private String[] phonetRules = null;
-        public String[] Rules
-        {
-            get { return phonetRules; }
-            set
-            {
-                phonetRules = value;
-                InitRulesHash();
-            }
-        }
-
-        public Phonetizer(bool keepRecurringDigits)
-        {
-            doKeepRecurringDigits = keepRecurringDigits;
-            Rules = RuleLoader.DefaultRules;
-        }
-
-        public Phonetizer() :
-            this(false)
-        {
-        }
+        #region Fields
 
         public static readonly int HASH_COUNT = 65536;
-
-        /**
-         * list of "normal" letters.
-         *
-         */
-        public static readonly String letters_a_to_z = "abcdefghijklmnopqrstuvwxyz";
+        public static readonly String PHONET_END = "";
 
         /**
          * list of "normal" letters.
          *
          */
         public static readonly String letters_A_to_Z = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        /**
+         * list of "normal" letters.
+         *
+         */
+        public static readonly String letters_a_to_z = "abcdefghijklmnopqrstuvwxyz";
 
         /**
          * list of umlauts.
@@ -110,14 +99,20 @@ namespace phonet4n.Core
          */
         public static readonly String umlaut_upper = "\u00c0\u00c1\u00c2\u00c3\u00c5\u00c4\u00c6\u00c7\u00d0\u00c8\u00c9\u00ca\u00cb\u00cc\u00cd\u00ce\u00cf\u00d1\u00d2\u00d3\u00d4\u00d5\u00d8\u008c\u00d6\u008a\u00df\u00de\u00d9\u00da\u00db\u00dc\u00dd\u009f";
 
-        static readonly bool doTrace = false;
+        private static readonly int[] alphaPos = new int[HASH_COUNT];
         static readonly bool doCheckRules = false;
-        public static readonly String PHONET_END = "";
+        static readonly bool doTrace = false;
+        private static readonly bool[] isLetter = new bool[HASH_COUNT];
+        private static readonly char[] upperChar = new char[HASH_COUNT];
+
+        private bool doKeepRecurringDigits;
         private int[] phonetHash;
         private int[][] phonetHash1, phonetHash2;
-        private static readonly int[] alphaPos = new int[HASH_COUNT];
-        private static readonly char[] upperChar = new char[HASH_COUNT];
-        private static readonly bool[] isLetter = new bool[HASH_COUNT];
+        private String[] phonetRules = null;
+
+        #endregion Fields
+
+        #region Constructors
 
         static Phonetizer()
         {
@@ -169,130 +164,38 @@ namespace phonet4n.Core
             } // for k
         }
 
-        private int[][] CreateArray(int length1, int length2)
+        public Phonetizer(bool keepRecurringDigits)
         {
-            int[][] result = new int[length1][];
-            for (int i = 0; i < result.Length; i++)
-                result[i] = new int[length2];
-            return result;
+            doKeepRecurringDigits = keepRecurringDigits;
+            Rules = RuleLoader.DefaultRules;
         }
 
-        private void InitRulesHash()
+        public Phonetizer()
+            : this(false)
         {
-            // create hash arrays
-            phonetHash = new int[HASH_COUNT];
-            phonetHash1 = CreateArray(26, 28);
-            phonetHash2 = CreateArray(26, 28);
+        }
 
-            // reset hash arrays
-            for (int i = 0; i < HASH_COUNT; i++)
-                phonetHash[i] = -1;
+        #endregion Constructors
 
-            for (int i = 0; i < 26; i++)
+        #region Properties
+
+        public String[] Rules
+        {
+            get { return phonetRules; }
+            set
             {
-                for (int j = 0; j < 28; j++)
-                {
-                    phonetHash1[i][j] = -1;
-                    phonetHash2[i][j] = -1;
-                }
+                phonetRules = value;
+                InitRulesHash();
             }
-
-            // hash the rules
-            int[] p_hash1, p_hash2;
-            int k;
-
-            String nextRule;
-
-            for (int i = 0; phonetRules[i] != PHONET_END; i += 3)
-            { // XXX +=2
-
-                nextRule = phonetRules[i];
-
-                if (nextRule == null)
-                {
-                    continue;
-                }
-
-
-                String nextRuleCharArr = nextRule + "\0";
-
-                //  calculate first hash value
-                k = nextRuleCharArr[0];
-                if (phonetHash[k] < 0 && (phonetRules[i + 1] != null || phonetRules[i + 2] != null))
-                { // XXX: letztes raus
-                    phonetHash[k] = i;
-                }
-
-                if (k == 0 || alphaPos[k] < 2)
-                {
-                    continue;
-                }
-
-                // calculate second hash values
-                k = alphaPos[k];
-                p_hash1 = phonetHash1[k - 2];
-                p_hash2 = phonetHash2[k - 2];
-
-                int nextRuleIdx = 1;
-                if (nextRuleCharArr[nextRuleIdx] == '(')
-                {
-                    nextRuleIdx++;
-                }
-                else if (nextRuleCharArr[nextRuleIdx] == '\0')
-                {
-                    nextRuleCharArr = " \0";
-                    nextRuleIdx = 0;
-                }
-                else
-                {
-                    nextRuleCharArr = nextRuleCharArr[nextRuleIdx] + "\0";
-                    nextRuleIdx = 0;
-                }
-
-                while (nextRuleCharArr[nextRuleIdx] != '\0' && nextRuleCharArr[nextRuleIdx] != ')')
-                {
-
-                    k = alphaPos[nextRuleCharArr[nextRuleIdx]];
-
-                    if (k > 0)
-                    {
-
-                        // add hash value for this letter
-                        if (p_hash1[k] < 0)
-                        {
-                            p_hash1[k] = i;
-                            p_hash2[k] = i;
-                        }
-
-                        if (p_hash2[k] >= i - 30)
-                        {
-                            p_hash2[k] = i;
-                        }
-                        else
-                        {
-                            k = -1;
-                        }
-                    }
-
-                    if (k <= 0)
-                    {
-                        // add hash value for all letters
-                        if (p_hash1[0] < 0)
-                        {
-                            p_hash1[0] = i;
-                        }
-                        p_hash2[0] = i;
-                    }
-                    nextRuleIdx++;
-
-                } // end while
-
-            } // end for phonetRules...
         }
+
+        #endregion Properties
+
+        #region Methods
 
         public String Phonetize(String srcStr)
         {
-       	    int k0, n0, p0, z0;
+            int k0, n0, p0, z0;
             int start1 = 0, end1 = 0, start2 = 0, end2 = 0;
             int start3 = 0, end3 = 0, start4 = 0, end4 = 0;
 
@@ -343,9 +246,9 @@ namespace phonet4n.Core
                     p_hash1 = phonetHash1[n - 2];
                     p_hash2 = phonetHash2[n - 2];
 
-                    n = alphaPos[srcUpperStr[srcStrIdx + 1]];
-                    start1 = p_hash1[n];
-                    start2 = p_hash1[0];
+            n = alphaPos[srcUpperStr[srcStrIdx + 1]];
+            start1 = p_hash1[n];
+            start2 = p_hash1[0];
                     end1 = p_hash2[n];
                     end2 = p_hash2[0];
 
@@ -457,7 +360,7 @@ namespace phonet4n.Core
                                     nextRuleIdx++;
                                 }
                             }
-                        } // end if *s == '(' 
+                        } // end if *s == '('
 
                         p0 = nextRuleCharArr[nextRuleIdx];
                         k0 = numMatchLetters;
@@ -766,7 +669,6 @@ namespace phonet4n.Core
                                 // new "current char"
                                 nextCurrentChar = nextRuleCharArr[nextRuleIdx];
 
-
                                 if (phonetRules[n][0] != '\0' && phonetRules[n].IndexOf("^^", 1) != -1)
                                 {
                                     if (nextCurrentChar != '\0')
@@ -831,9 +733,128 @@ namespace phonet4n.Core
             String resultString = new String(result);
             int resIndex = resultString.IndexOf('\0');
             return resultString.Substring(0, resIndex);
+        }
 
+        private int[][] CreateArray(int length1, int length2)
+        {
+            int[][] result = new int[length1][];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = new int[length2];
+            return result;
+        }
 
-        } // end phonetize
+        private void InitRulesHash()
+        {
+            // create hash arrays
+            phonetHash = new int[HASH_COUNT];
+            phonetHash1 = CreateArray(26, 28);
+            phonetHash2 = CreateArray(26, 28);
 
+            // reset hash arrays
+            for (int i = 0; i < HASH_COUNT; i++)
+                phonetHash[i] = -1;
+
+            for (int i = 0; i < 26; i++)
+            {
+                for (int j = 0; j < 28; j++)
+                {
+                    phonetHash1[i][j] = -1;
+                    phonetHash2[i][j] = -1;
+                }
+            }
+
+            // hash the rules
+            int[] p_hash1, p_hash2;
+            int k;
+
+            String nextRule;
+
+            for (int i = 0; phonetRules[i] != PHONET_END; i += 3)
+            { // XXX +=2
+
+                nextRule = phonetRules[i];
+
+                if (nextRule == null)
+                {
+                    continue;
+                }
+
+                String nextRuleCharArr = nextRule + "\0";
+
+                //  calculate first hash value
+                k = nextRuleCharArr[0];
+                if (phonetHash[k] < 0 && (phonetRules[i + 1] != null || phonetRules[i + 2] != null))
+                { // XXX: letztes raus
+                    phonetHash[k] = i;
+                }
+
+                if (k == 0 || alphaPos[k] < 2)
+                {
+                    continue;
+                }
+
+                // calculate second hash values
+                k = alphaPos[k];
+                p_hash1 = phonetHash1[k - 2];
+                p_hash2 = phonetHash2[k - 2];
+
+                int nextRuleIdx = 1;
+                if (nextRuleCharArr[nextRuleIdx] == '(')
+                {
+                    nextRuleIdx++;
+                }
+                else if (nextRuleCharArr[nextRuleIdx] == '\0')
+                {
+                    nextRuleCharArr = " \0";
+                    nextRuleIdx = 0;
+                }
+                else
+                {
+                    nextRuleCharArr = nextRuleCharArr[nextRuleIdx] + "\0";
+                    nextRuleIdx = 0;
+                }
+
+                while (nextRuleCharArr[nextRuleIdx] != '\0' && nextRuleCharArr[nextRuleIdx] != ')')
+                {
+
+                    k = alphaPos[nextRuleCharArr[nextRuleIdx]];
+
+                    if (k > 0)
+                    {
+
+                        // add hash value for this letter
+                        if (p_hash1[k] < 0)
+                        {
+                            p_hash1[k] = i;
+                            p_hash2[k] = i;
+                        }
+
+                        if (p_hash2[k] >= i - 30)
+                        {
+                            p_hash2[k] = i;
+                        }
+                        else
+                        {
+                            k = -1;
+                        }
+                    }
+
+                    if (k <= 0)
+                    {
+                        // add hash value for all letters
+                        if (p_hash1[0] < 0)
+                        {
+                            p_hash1[0] = i;
+                        }
+                        p_hash2[0] = i;
+                    }
+                    nextRuleIdx++;
+
+                } // end while
+
+            } // end for phonetRules...
+        }
+
+        #endregion Methods
     }
 }

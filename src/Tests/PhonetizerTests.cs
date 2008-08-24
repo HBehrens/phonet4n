@@ -1,6 +1,8 @@
+#region Header
+
 /*
  *  This file is part of phonet4n.
- * 
+ *
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
  *
  *  Contributions by
@@ -21,41 +23,21 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using phonet4n.Core;
-using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+#endregion Header
 
 namespace phonet4n.Tests
 {
+    using System;
+
+    using NUnit.Framework;
+    using NUnit.Framework.SyntaxHelpers;
+
+    using phonet4n.Core;
+
     [TestFixture]
     public class PhonetizerTests
     {
-        [Test]
-        public void TestSimpleGerman1()
-        {
-            Phonetizer p = new Phonetizer();
-            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_1.csv");
-            Assert.AreEqual(919 * 3, p.Rules.Length);
-
-            Assert.AreEqual("MEIA", p.Phonetize("Meier"));
-            Assert.AreEqual("MEIA", p.Phonetize("Mayer"));
-            Assert.AreEqual("FEIFA", p.Phonetize("Pfeiffer"));
-            Assert.AreEqual("FEIFA", p.Phonetize("Pfeifer"));
-        }
-
-        [Test]
-        public void TestSimpleGerman2()
-        {
-            Phonetizer p = new Phonetizer();
-            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_2.csv");
-            Assert.AreEqual(919 * 3, p.Rules.Length);
-
-            Assert.AreEqual("NEIA", p.Phonetize("Meier"));
-            Assert.AreEqual("NEIA", p.Phonetize("Mayer"));
-            Assert.AreEqual("FEIFA", p.Phonetize("Pfeiffer"));
-            Assert.AreEqual("FEIFA", p.Phonetize("Pfeifer"));
-        }
+        #region Methods
 
         [Test]
         public void TestRecurringDigits_Keep()
@@ -82,6 +64,33 @@ namespace phonet4n.Tests
             Assert.AreEqual("0123456789", p.Phonetize("00112233445566778899"));
             Assert.AreEqual("0", p.Phonetize("0000"));
         }
-    }
 
+        [Test]
+        public void TestSimpleGerman1()
+        {
+            Phonetizer p = new Phonetizer();
+            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_1.csv");
+            Assert.AreEqual(919 * 3, p.Rules.Length);
+
+            Assert.AreEqual("MEIA", p.Phonetize("Meier"));
+            Assert.AreEqual("MEIA", p.Phonetize("Mayer"));
+            Assert.AreEqual("FEIFA", p.Phonetize("Pfeiffer"));
+            Assert.AreEqual("FEIFA", p.Phonetize("Pfeifer"));
+        }
+
+        [Test]
+        public void TestSimpleGerman2()
+        {
+            Phonetizer p = new Phonetizer();
+            p.Rules = RuleLoader.LoadFromRessource("phonet4n.Core.german_2.csv");
+            Assert.AreEqual(919 * 3, p.Rules.Length);
+
+            Assert.AreEqual("NEIA", p.Phonetize("Meier"));
+            Assert.AreEqual("NEIA", p.Phonetize("Mayer"));
+            Assert.AreEqual("FEIFA", p.Phonetize("Pfeiffer"));
+            Assert.AreEqual("FEIFA", p.Phonetize("Pfeifer"));
+        }
+
+        #endregion Methods
+    }
 }

@@ -1,6 +1,8 @@
+#region Header
+
 /*
  *  This file is part of phonet4n.
- * 
+ *
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
  *
  *  phonet4n is free software: you can redistribute it and/or modify
@@ -18,16 +20,16 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Runtime.InteropServices;
+#endregion Header
 
 namespace phonet4n.Tests
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     public class CImplAdapter
     {
-
-        [DllImport("phonet.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int phonet(char[] src, [In, Out] char[] dest, int len, int mode);
+        #region Methods
 
         public string Phonetize(string input)
         {
@@ -38,5 +40,9 @@ namespace phonet4n.Tests
             return new String(output).Substring(0, len);
         }
 
+        [DllImport("..\\obj\\c\\phonet.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int phonet(char[] src, [In, Out] char[] dest, int len, int mode);
+
+        #endregion Methods
     }
 }

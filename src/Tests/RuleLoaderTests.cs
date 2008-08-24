@@ -1,6 +1,8 @@
+#region Header
+
 /*
  *  This file is part of phonet4n.
- * 
+ *
  *  Copyright 2008 Heiko Behrens (HeikoBehrens a t gmx de)
  *
  *  phonet4n is free software: you can redistribute it and/or modify
@@ -18,21 +20,40 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
-using phonet4n.Core;
+#endregion Header
 
 namespace phonet4n.Tests
 {
+    using System;
+
+    using NUnit.Framework;
+    using NUnit.Framework.SyntaxHelpers;
+
+    using phonet4n.Core;
+
     [TestFixture]
     public class RuleLoaderTests
     {
+        #region Methods
+
         [Test]
         public void TestDefaultRules()
         {
             Assert.IsNotNull(RuleLoader.DefaultRules);
             Assert.AreEqual(919 * 3, RuleLoader.DefaultRules.Length);
+        }
+
+        [Test]
+        public void TestLoadInvalidRessource()
+        {
+            try
+            {
+                RuleLoader.LoadFromRessource("invalidName");
+                Assert.Fail("ArgumentException expected");
+            }
+            catch (ArgumentException)
+            {
+            }
         }
 
         [Test]
@@ -51,18 +72,6 @@ namespace phonet4n.Tests
             Assert.AreNotEqual(res1, res2);
         }
 
-        [Test]
-        public void TestLoadInvalidRessource()
-        {
-            try
-            {
-                RuleLoader.LoadFromRessource("invalidName");
-                Assert.Fail("ArgumentException expected");
-            }
-            catch (ArgumentException)
-            {
-            }
-        }
-
+        #endregion Methods
     }
 }
